@@ -250,6 +250,9 @@ class carddav extends rcube_plugin
         $logger = $infra->logger();
         $rcUserId = (string) $_SESSION['user_id'];
 
+        $_SESSION['login_username'] = $_SESSION['username'];
+        $_SESSION['login_password'] = $_SESSION['password'];
+
         try {
             $logger->debug(__METHOD__);
 
@@ -660,9 +663,13 @@ class carddav extends rcube_plugin
         $rcube = rcube::get_instance();
         $rcusername = (string) $_SESSION['username'];
 
+        list($rcusernamelogin, $rcusernamedomain) = rcube_utils::explode('@', $_SESSION['login_username']);
+
         $username = strtr($username, [
             '%u' => $rcusername,
+            '%L' => $rcusernamelogin,
             '%l' => $rcube->user->get_username('local'),
+            '%D' => $rcusernamedomain,
             '%d' => $rcube->user->get_username('domain'),
             // %V parses username for macosx, replaces periods and @ by _, work around bugs in contacts.app
             '%V' => strtr($rcusername, "@.", "__")
@@ -682,6 +689,13 @@ class carddav extends rcube_plugin
         if ($password == '%p') {
             $rcube = rcube::get_instance();
             $password = $rcube->decrypt((string) $_SESSION['password']);
+            if ($password === false) {
+                $password = "";
+            }
+        }else if($password == '%P') {
+            $logger->error("using login_password");
+            $rcube = rcube::get_instance();
+            $password = $rcube->decrypt((string) $_SESSION['login_password']);
             if ($password === false) {
                 $password = "";
             }
@@ -1375,7 +1389,7 @@ class carddav extends rcube_plugin
             throw new \Exception("No password available to use for encryption because user logged in via OAuth2");
         }
 
-        $imap_password = $rcube->decrypt((string) $_SESSION['password']);
+        $imap_password = $rcube->decrypt((string) $_SESSION['login_password']);
         if ($imap_password === false || strlen($imap_password) == 0) {
             throw new \Exception("No password available to use for encryption");
         }

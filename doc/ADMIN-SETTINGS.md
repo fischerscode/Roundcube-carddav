@@ -76,8 +76,12 @@ addressbooks preconfigured by the admin. The available substitutions depend on t
 In the username and URL fields, the following substitutions are available:
 
  - `%u`: Replaced by the full roundcube username
+ - `%L`: Replaced by the local part of the login roundcube username.
+         (Example: Roundcube username `theuser@example.com` - `%L` is replaced with `theuser`, `theuser` - `%L` is replaced with `theuser`.)
  - `%l`: Replaced by the local part of the roundcube username if it is an email address.
          (Example: Roundcube username `theuser@example.com` - `%l` is replaced with `theuser`)
+ - `%D`: Replaced by the domain part of the login roundcube username.
+         (Example: Roundcube username `theuser@example.com` - `%d` is replaced with `example.com`)
  - `%d`: Replaced by the domain part of the roundcube username if it is an email address.
          (Example: Roundcube username `theuser@example.com` - `%d` is replaced with `example.com`)
  - `%V`: Replaced by the roundcube username, with `@` and `.` characters substituted by `_`.
@@ -87,6 +91,7 @@ In the username and URL fields, the following substitutions are available:
 
 In the password field, the following special values are substituted:
 
+ - `%P`: Replaced by the roundcube login password of the user.
  - `%p`: Replaced by the roundcube/IMAP password of the user.
  - `%b`: Marker to use bearer authentication. If no preset-specific OAUTH configuration is configured, the bearer token
    acquired by roundcube during login with OAUTH2 (available from roundcube 1.5) is used. The username is not used and
